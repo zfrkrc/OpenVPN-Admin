@@ -4,6 +4,11 @@
     return [ 0, 5 ];
   }
 
+  function updateUserFlag($bdd, $userId, $field, $value) {
+    $req_string = 'UPDATE user SET ' . $field . ' = ? WHERE user_id = ?';
+    $req = $bdd->prepare($req_string);
+    $req->execute(array($value, $userId));
+  }
   function updateSchema($bdd, $newKey) {
     if ($newKey === 0) {
       $req_string = 'INSERT INTO `application` (sql_schema) VALUES (?)';
@@ -33,7 +38,13 @@
 
     return true;
   }
-
+  function generateSecretCode() {
+    $val = '';
+    for( $i=0; $i<10; $i++ ) {
+       $val .= chr( rand( 65, 90 ) );
+    }
+    return $val;
+  }
   function hashPass($pass) {
     return password_hash($pass, PASSWORD_DEFAULT);
   }

@@ -24,6 +24,9 @@
                           "user_phone" => $data['user_phone'],
                           "user_online" => $data['user_online'],
                           "user_enable" => $data['user_enable'],
+                          "user_2factor" => $data['user_2factor'],
+                          "user_2factor_paired" => $data['user_2factor_paired'],
+                          "user_2factor_scode" => $data['user_2factor_scode'],
                           "user_start_date" => $data['user_start_date'],
                           "user_end_date" => $data['user_end_date']);
         } while($data = $req->fetch());
@@ -134,14 +137,15 @@
     $pass = hashPass($_POST['user_pass']);
     $mail = "";
     $phone = "";
+    $user2factorScode=generateSecretCode();
     $online = 0;
     $enable = 1;
     $start = null;
     $end = null;
 
-    $req = $bdd->prepare('INSERT INTO user (user_id, user_pass, user_mail, user_phone, user_online, user_enable, user_start_date, user_end_date)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
-    $req->execute(array($id, $pass, $mail, $phone, $online, $enable, $start, $end));
+    $req = $bdd->prepare('INSERT INTO user (user_id, user_pass, user_mail, user_phone, user_online, user_enable, user_start_date, user_end_date,user_2factor_scode)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?,?)');
+    $req->execute(array($id, $pass, $mail, $phone, $online, $enable, $start, $end, $user2factorScode));
 
     $res = array("user_id" => $id,
       "user_pass" => $pass,
@@ -149,6 +153,7 @@
       "user_phone" => $phone,
       "user_online" => $online,
       "user_enable" => $enable,
+      "user_2factor_scode" => $user2factorScode,
       "user_start_date" => $start,
       "user_end_date" => $end
     );
@@ -158,7 +163,7 @@
 
   // ---------------- UPDATE USER ----------------
   else if(isset($_POST['set_user'])){
-    $valid = array("user_id", "user_pass", "user_mail", "user_phone", "user_enable", "user_start_date", "user_end_date");
+    $valid = array("user_id", "user_pass", "user_mail", "user_phone", "user_enable","user_2factor","user_2factor_scode","user_2factor_paired", "user_start_date", "user_end_date");
 
     $field = $_POST['name'];
     $value = $_POST['value'];

@@ -20,6 +20,15 @@ $(function () {
     return "<span class='glyphicon glyphicon-remove action'></span";
   }
 
+ function secretCodeFormatter(value, row) {
+     if (value) {
+        return '*********';
+      }
+      else {
+        return "NOT SET";
+      }
+   }
+
   function refreshTable($table) {
     $table.bootstrapTable('refresh');
   }
@@ -28,6 +37,9 @@ $(function () {
     console.error(error);
     alert('Error: ' + textStatus);
   }
+
+
+
 
    function checkFormatter(value, row, index) {
       return '<input type="checkbox" '+(parseInt(value)===1?'checked':'')+' />';
@@ -216,6 +228,27 @@ $(function () {
             }
          }
       },
+      {
+         title: "2 Factor Auth",
+         field: "user_2factor",
+         formatter : checkFormatter,
+         events: {
+            'click input': function (e, value, row) {
+              genericSetField('user_2factor', value === '1' ? '0': '1', row.user_id);
+            }
+         }
+      },
+      {
+         title: "2 Factor Auth - Paired",
+         field: "user_2factor_paired",
+         formatter : checkFormatter,
+         events: {
+            'click input': function (e, value, row) {
+              genericSetField('user_2factor_paired', value === '1' ? '0': '1', row.user_id);
+            }
+         }
+      },
+      { title: "2 Factor Auth - Secret Code", field: "user_2factor_scode", editable: userEditable, formatter: secretCodeFormatter },
       { title: "Start Date", field: "user_start_date", editable: userDateEditable },
       { title: "End Date", field: "user_end_date", editable: userDateEditable },
       {

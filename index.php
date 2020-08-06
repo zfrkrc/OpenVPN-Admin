@@ -11,6 +11,37 @@
     exit(-1);
   }
 
+
+// Get the configuration files ?
+if(isset($_POST['authenticator_get'], $_POST['authenticator_username'], $_POST['authenticator_pass'])
+ && !empty($_POST['authenticator_pass'])) {
+   $req = $bdd->prepare('SELECT * FROM user WHERE user_id = ?');
+    $req->execute(array($_POST['authenticator_username']));
+    $data = $req->fetch();
+
+    // Error ?
+    if($data && passEqual($_POST['authenticator_pass'], $data['user_pass'])) {
+
+        $paired = $data["user_2factor_paired"];
+        if ($paired) {
+            $error = true;
+            $errorMessage = "User already setup 2 Step Authentication";
+        }
+        else {
+            $_SESSION['user_id'] = $data['user_id'];
+            $_SESSION['secret_code'] = $data['user_2factor_scode'];
+            header('Location: /authenticator_response.php');
+        }
+
+    }
+    else {
+      $error = true;
+    }
+
+
+
+}
+
   // Get the configuration files ?
   if(isset($_POST['configuration_get'], $_POST['configuration_username'], $_POST['configuration_pass'], $_POST['configuration_os'])
      && !empty($_POST['configuration_pass'])) {
@@ -167,14 +198,34 @@
     }
 
     // --------------- CONFIGURATION ---------------
-    if(!isset($_GET['admin'])) {
+//     if(!isset($_GET['admin'])) {
+//       if(isset($error) && $error == true)
+//         printError('Login error');
+//
+//       require(dirname(__FILE__) . '/include/html/menu.php');
+//       require(dirname(__FILE__) . '/include/html/form/configuration.php');
+//     }
+
+    if(isset($_GET['configuration'])) {
       if(isset($error) && $error == true)
         printError('Login error');
 
       require(dirname(__FILE__) . '/include/html/menu.php');
       require(dirname(__FILE__) . '/include/html/form/configuration.php');
     }
+    else if (isset($_GET['authenticator'])) {
+      if(isset($error) && $error == true) {
+         if (isset($errorMessage)) {
+            printError($errorMessage);
+        }
+        else {
+            printError('Login error');
+        }
 
+      }
+       require(dirname(__FILE__) . '/include/html/menu.php');
+       require(dirname(__FILE__) . '/include/html/form/authenticator.php');
+    }
 
     // --------------- LOGIN ---------------
     else if(!isset($_SESSION['admin_id'])){
@@ -195,7 +246,8 @@
             </div>
             <div class="col-md-6">
               <a class="navbar-text navbar-right" href="index.php?logout" title="Logout"><button class="btn btn-danger">Logout <span class="glyphicon glyphicon-off" aria-hidden="true"></span></button></a>
-              <a class="navbar-text navbar-right" href="index.php" title="Configuration"><button class="btn btn-default">Configurations</button></a>
+              <a class="navbar-text navbar-right" href="index.php?configuration" title="Configuration"><button class="btn btn-default">Configurations</button></a>
+              <a class="navbar-text navbar-right" href="index.php?authenticator" title="google-authenticator"><button class="btn btn-default">Setup Google Authentication</button></a>
             </p>
           </div>
         </div>
