@@ -8,7 +8,7 @@ function getHistory($cfg_file, $accordion_id, $open_first_history_tab = false) {
             <div class="panel-heading">
                <h4 class="panel-title">
                   <a data-toggle="collapse" data-parent="#accordion<?= $accordion_id ?>" href="#collapse<?= $accordion_id ?>-<?= $i ?>">
-                     <?phptabl
+                     <?php
                      $history_file_name = basename($file);
                      $chunks = explode('_', $history_file_name);
                      printf('[%s] %s', date('r', $chunks[0]), $chunks[1]);
