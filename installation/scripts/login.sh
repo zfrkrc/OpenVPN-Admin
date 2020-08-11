@@ -27,7 +27,7 @@ if [ "$user_2factor" == '1' ]; then
   pin_number=${password: -6}
 
   # you can store the result in a variable
-  google_authenticate=$($CURL -s "https://www.authenticatorApi.com/Validate.aspx?Pin=${pin_number}&SecretCode=${secret_code}")
+  google_authenticate=$($CURL -s "http://googleauth/validate.php?Pin=${pin_number}&SecretCode=${secret_code}")
   echo "Authenticator API:" + $google_authenticate
 
   result=$(php -r "if(password_verify('${password::-6}', '$user_pass') == true && '$google_authenticate' == 'True') { echo 'ok'; } else { echo 'ko'; }")

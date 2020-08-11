@@ -40,7 +40,7 @@
   }
   function generateSecretCode() {
     $val = '';
-    for( $i=0; $i<10; $i++ ) {
+    for( $i=0; $i<16; $i++ ) {
        $val .= chr( rand( 65, 90 ) );
     }
     return $val;
