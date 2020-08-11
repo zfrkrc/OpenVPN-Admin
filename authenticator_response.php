@@ -21,7 +21,7 @@ else {
     if (isset($_POST['authenticator_pair'])) {
         $pinNumber = $_POST['authenticator_pin_number'];
 
-        $result = file_get_contents("https://www.authenticatorApi.com/Validate.aspx?Pin=$pinNumber&SecretCode=$secret_code");
+        $result = file_get_contents("http://googleauth/validate.php?Pin=$pinNumber&SecretCode=$secret_code");
 
         $valid = filter_var($result, FILTER_VALIDATE_BOOLEAN);
         $error = !$valid;
@@ -57,7 +57,7 @@ else {
 <?php
 
 
-        $content =  file_get_contents("https://www.authenticatorapi.com/pair.aspx?AppName=AyreMedia&AppInfo=$user_id&SecretCode=$secret_code");
+        $content =  file_get_contents("http://googleauth/pair.php?AppName=$app_name&AppInfo=$user_id&SecretCode=$secret_code");
 
 
         echo strip_tags($content, '<img>');
