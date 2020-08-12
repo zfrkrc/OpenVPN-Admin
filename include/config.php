@@ -4,5 +4,5 @@
 	$db   = 'openvpn-admin';
 	$user = '';
 	$pass = '';
-	$app_name= 'ChangeMe';
+	$app_name = '';
 ?>
