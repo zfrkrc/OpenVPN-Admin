@@ -2,6 +2,7 @@
 
 ## Summary
 Administrate its OpenVPN with a web interface (logs visualisations, users managing...) and a SQL database.
+It also includes extensions to the interface to manage 2 Step Authentication using Google Authentication.
 
 ![Previsualisation configuration](https://lutim.cpy.re/fUq2rxqz)
 ![Previsualisation administration](https://lutim.cpy.re/wwYMkHcM)
