@@ -1,5 +1,9 @@
 # OpenVPN Admin
 
+You might want to read this article first:
+
+https://spltech.co.uk/creating-a-vpn-with-2-factor-authentication-using-openvpn-and-docker/
+
 ## Summary
 Administrate its OpenVPN with a web interface (logs visualisations, users managing...) and a SQL database.
 It also includes extensions to the interface to manage 2 Step Authentication using Google Authentication.
