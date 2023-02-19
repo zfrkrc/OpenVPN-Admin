@@ -56,7 +56,7 @@ fi
 read -p "Port [443]: " server_port
 
 if [[ -z $server_port ]]; then
-  server_port="442"
+  server_port="443"
 fi
 
 # Get root pass (to create the database and the user)
