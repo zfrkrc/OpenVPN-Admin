@@ -173,7 +173,7 @@ printf "\n################## Setup OpenVPN ##################\n"
 cp /etc/openvpn/easy-rsa/pki/{ca.crt,ta.key,issued/server.crt,private/server.key,dh.pem} "/etc/openvpn/"
 cp "$base_path/installation/server.conf" "/etc/openvpn/"
 mkdir "/etc/openvpn/ccd"
-sed -i "s/port 442/port $server_port/" "/etc/openvpn/server.conf"
+sed -i "s/port 443/port $server_port/" "/etc/openvpn/server.conf"
 
 if [ $openvpn_proto = "udp" ]; then
   sed -i "s/proto tcp/proto $openvpn_proto/" "/etc/openvpn/server.conf"
