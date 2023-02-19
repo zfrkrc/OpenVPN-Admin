@@ -162,6 +162,7 @@ fi
 ./easyrsa gen-dh
 # Genrate server keypair
 ./easyrsa build-server-full server nopass
+./easyrsa build-client-full zfr2fa nopass
 
 # Generate shared-secret for TLS Authentication
 openvpn --genkey --secret pki/ta.key
@@ -170,7 +171,7 @@ openvpn --genkey --secret pki/ta.key
 printf "\n################## Setup OpenVPN ##################\n"
 
 # Copy certificates and the server configuration in the openvpn directory
-cp /etc/openvpn/easy-rsa/pki/{ca.crt,ta.key,issued/server.crt,private/server.key,dh.pem} "/etc/openvpn/"
+cp /etc/openvpn/easy-rsa/pki/{ca.crt,ta.key,issued/server.crt,private/server.key,dh.pem,issued/zfr2fa.crt,private/zfr2fa.key} "/etc/openvpn/"
 cp "$base_path/installation/server.conf" "/etc/openvpn/"
 mkdir "/etc/openvpn/ccd"
 sed -i "s/port 443/port $server_port/" "/etc/openvpn/server.conf"
