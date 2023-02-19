@@ -117,10 +117,10 @@ read -p "Common Name (eg, your name or your server's hostname) [ChangeMe]: " key
 printf "\n################## Creating the certificates ##################\n"
 
 # Get the rsa keys
-wget "https://github.com/OpenVPN/easy-rsa/releases/download/v3.0.6/EasyRSA-unix-v3.0.6.tgz"
-tar -xaf "EasyRSA-unix-v3.0.6.tgz"
-mv "EasyRSA-v3.0.6" /etc/openvpn/easy-rsa
-rm "EasyRSA-unix-v3.0.6.tgz"
+wget "https://github.com/OpenVPN/easy-rsa/releases/download/v3.1.2/EasyRSA-3.1.2.tgz"
+tar -xaf "EasyRSA-unix-v3.1.2.tgz"
+mv "EasyRSA-v3.1.2" /etc/openvpn/easy-rsa
+rm "EasyRSA-3.1.2.tgz"
 
 cd /etc/openvpn/easy-rsa
 
