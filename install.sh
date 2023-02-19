@@ -56,7 +56,7 @@ fi
 read -p "Port [443]: " server_port
 
 if [[ -z $server_port ]]; then
-  server_port="1194"
+  server_port="442"
 fi
 
 # Get root pass (to create the database and the user)
@@ -173,7 +173,7 @@ printf "\n################## Setup OpenVPN ##################\n"
 cp /etc/openvpn/easy-rsa/pki/{ca.crt,ta.key,issued/server.crt,private/server.key,dh.pem} "/etc/openvpn/"
 cp "$base_path/installation/server.conf" "/etc/openvpn/"
 mkdir "/etc/openvpn/ccd"
-sed -i "s/port 1194/port $server_port/" "/etc/openvpn/server.conf"
+sed -i "s/port 442/port $server_port/" "/etc/openvpn/server.conf"
 
 if [ $openvpn_proto = "udp" ]; then
   sed -i "s/proto tcp/proto $openvpn_proto/" "/etc/openvpn/server.conf"
