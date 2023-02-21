@@ -163,7 +163,7 @@ fi
 # Genrate server keypair
 ./easyrsa build-server-full server nopass
 #./easyrsa build-client-full zfr2fa nopass
-
+groupadd nobody
 # Generate shared-secret for TLS Authentication
 openvpn --genkey --secret pki/ta.key
 
@@ -235,6 +235,7 @@ sed -i "s/\$pass = '';/\$pass = '$mysql_pass';/" "./include/config.php"
 # Replace in the client configurations with the ip of the server and openvpn protocol
 for file in $(find -name client.ovpn); do
     sed -i "s/remote xxx\.xxx\.xxx\.xxx 443/remote $ip_server $server_port/" $file
+    echo "tls-auth ta.key 1" >> $file
     echo "<ca>" >> $file
     cat "/etc/openvpn/ca.crt" >> $file
     echo "</ca>" >> $file
