@@ -162,7 +162,7 @@ fi
 ./easyrsa gen-dh
 # Genrate server keypair
 ./easyrsa build-server-full server nopass
-./easyrsa build-client-full zfr2fa nopass
+#./easyrsa build-client-full zfr2fa nopass
 
 # Generate shared-secret for TLS Authentication
 openvpn --genkey --secret pki/ta.key
