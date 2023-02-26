@@ -118,7 +118,7 @@ printf "\n################## Creating the certificates ##################\n"
 
 # Get the rsa keys
 wget "https://github.com/OpenVPN/easy-rsa/releases/download/v3.1.2/EasyRSA-3.1.2.tgz"
-tar -xaf "EasyRSA-unix-v3.1.2.tgz"
+tar -zxaf "EasyRSA-unix-v3.1.2.tgz"
 mv "EasyRSA-v3.1.2" /etc/openvpn/easy-rsa
 rm "EasyRSA-3.1.2.tgz"
 
