@@ -1,8 +1,9 @@
 <?php
   session_start();
 
-  require(dirname(__FILE__) . '/include/functions.php');
-  require(dirname(__FILE__) . '/include/connect.php');
+  require_once(dirname(__FILE__) . '/include/config.php');
+  require_once(dirname(__FILE__) . '/include/connect.php');
+  require_once(dirname(__FILE__) . '/include/functions.php');
 
   // Disconnecting ?
   if(isset($_GET['logout'])){
@@ -10,37 +11,6 @@
     header("Location: .");
     exit(-1);
   }
-
-
-// Get the configuration files ?
-if(isset($_POST['authenticator_get'], $_POST['authenticator_username'], $_POST['authenticator_pass'])
- && !empty($_POST['authenticator_pass'])) {
-   $req = $bdd->prepare('SELECT * FROM user WHERE user_id = ?');
-    $req->execute(array($_POST['authenticator_username']));
-    $data = $req->fetch();
-
-    // Error ?
-    if($data && passEqual($_POST['authenticator_pass'], $data['user_pass'])) {
-
-        $paired = $data["user_2factor_paired"];
-        if ($paired) {
-            $error = true;
-            $errorMessage = "User already setup 2 Step Authentication";
-        }
-        else {
-            $_SESSION['user_id'] = $data['user_id'];
-            $_SESSION['secret_code'] = $data['user_2factor_scode'];
-            header('Location: /authenticator_response.php');
-        }
-
-    }
-    else {
-      $error = true;
-    }
-
-
-
-}
 
   // Get the configuration files ?
   if(isset($_POST['configuration_get'], $_POST['configuration_username'], $_POST['configuration_pass'], $_POST['configuration_os'])
@@ -54,14 +24,13 @@ if(isset($_POST['authenticator_get'], $_POST['authenticator_username'], $_POST['
       // Thanks http://stackoverflow.com/questions/4914750/how-to-zip-a-whole-folder-using-php
       if($_POST['configuration_os'] == "gnu_linux") {
         $conf_dir = 'gnu-linux';
-      } elseif($_POST['configuration_os'] == "osx_viscosity") {
-        $conf_dir = 'osx-viscosity';
-      } else {
+      }
+      else {
         $conf_dir = 'windows';
       }
       $rootPath = realpath("./client-conf/$conf_dir");
 
-      // Initialize archive object ;;;; why doing this every time the user logs in, when the cert is static?
+      // Initialize archive object
       $archive_base_name = "openvpn-$conf_dir";
       $archive_name = "$archive_base_name.zip";
       $archive_path = "./client-conf/$archive_name";
@@ -130,7 +99,6 @@ if(isset($_POST['authenticator_get'], $_POST['authenticator_username'], $_POST['
     <link rel="stylesheet" href="vendor/x-editable/dist/bootstrap3-editable/css/bootstrap-editable.css" type="text/css" />
     <link rel="stylesheet" href="vendor/bootstrap-table/dist/bootstrap-table.min.css" type="text/css" />
     <link rel="stylesheet" href="vendor/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css" type="text/css" />
-    <link rel="stylesheet" href="vendor/bootstrap-table/dist/extensions/filter-control/bootstrap-table-filter-control.css" type="text/css" />
     <link rel="stylesheet" href="css/index.css" type="text/css" />
 
     <link rel="icon" type="image/png" href="css/icon.png">
@@ -190,50 +158,30 @@ if(isset($_POST['authenticator_get'], $_POST['authenticator_username'], $_POST['
       }
       // Print the installation form
       else {
-        require(dirname(__FILE__) . '/include/html/menu.php');
-        require(dirname(__FILE__) . '/include/html/form/installation.php');
+        require_once(dirname(__FILE__) . '/include/html/menu.php');
+        require_once(dirname(__FILE__) . '/include/html/form/installation.php');
       }
 
       exit(-1);
     }
 
     // --------------- CONFIGURATION ---------------
-//     if(!isset($_GET['admin'])) {
-//       if(isset($error) && $error == true)
-//         printError('Login error');
-//
-//       require(dirname(__FILE__) . '/include/html/menu.php');
-//       require(dirname(__FILE__) . '/include/html/form/configuration.php');
-//     }
-
-    if(isset($_GET['configuration'])) {
+    if(!isset($_GET['admin'])) {
       if(isset($error) && $error == true)
         printError('Login error');
 
-      require(dirname(__FILE__) . '/include/html/menu.php');
-      require(dirname(__FILE__) . '/include/html/form/configuration.php');
+      require_once(dirname(__FILE__) . '/include/html/menu.php');
+      require_once(dirname(__FILE__) . '/include/html/form/configuration.php');
     }
-    else if (isset($_GET['authenticator'])) {
-      if(isset($error) && $error == true) {
-         if (isset($errorMessage)) {
-            printError($errorMessage);
-        }
-        else {
-            printError('Login error');
-        }
 
-      }
-       require(dirname(__FILE__) . '/include/html/menu.php');
-       require(dirname(__FILE__) . '/include/html/form/authenticator.php');
-    }
 
     // --------------- LOGIN ---------------
     else if(!isset($_SESSION['admin_id'])){
       if(isset($error) && $error == true)
         printError('Login error');
 
-      require(dirname(__FILE__) . '/include/html/menu.php');
-      require(dirname(__FILE__) . '/include/html/form/login.php');
+      require_once(dirname(__FILE__) . '/include/html/menu.php');
+      require_once(dirname(__FILE__) . '/include/html/form/login.php');
     }
 
     // --------------- GRIDS ---------------
@@ -242,23 +190,19 @@ if(isset($_POST['authenticator_get'], $_POST['authenticator_username'], $_POST['
       <nav class="navbar navbar-default">
         <div class="row col-md-12">
           <div class="col-md-6">
-            <p class="navbar-text signed">Signed in as <?php echo $_SESSION['admin_id']; ?>
+            <p class="navbar-text signed">Signed as <?php echo $_SESSION['admin_id']; ?>
             </div>
             <div class="col-md-6">
-              <a class="navbar-text navbar-right" href="index.php?logout" title="Logout"><button class="btn btn-danger">Logout <span class="glyphicon glyphicon-off" aria-hidden="true"></span></button></a>
-              <a class="navbar-text navbar-right" href="index.php?configuration" title="Configuration"><button class="btn btn-default">Configurations</button></a>
-              <a class="navbar-text navbar-right" href="index.php?authenticator" title="google-authenticator"><button class="btn btn-default">Setup Google Authentication</button></a>
+              <a class="navbar-text navbar-right" href="index.php?logout" title="Logout"><button class="btn btn-danger">Logout</button></a>
+              <a class="navbar-text navbar-right" href="index.php" title="Configuration"><button class="btn btn-default">Configurations</button></a>
             </p>
           </div>
         </div>
       </nav>
 
   <?php
-      require(dirname(__FILE__) . '/include/html/grids.php');
+      require_once(dirname(__FILE__) . '/include/html/grids.php');
     }
   ?>
-     <div id="message-stage">
-        <!-- used to display application messages (failures / status-notes) to the user -->
-     </div>
   </body>
 </html>

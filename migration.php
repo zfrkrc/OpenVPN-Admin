@@ -7,9 +7,9 @@
 
   $www = $argv[1];
 
-  require("$www/include/config.php");
-  require("$www/include/connect.php");
-  require("$www/include/functions.php");
+  require_once("$www/include/config.php");
+  require_once("$www/include/connect.php");
+  require_once("$www/include/functions.php");
 
   $migrations = getMigrationSchemas();
 
@@ -18,14 +18,14 @@
     $req->execute();
     $data = $req->fetch();
 
-    $sql_schema = -1;
+    $sql_schema = 0;
     if ($data['sql_schema']) {
       $sql_schema = $data['sql_schema'];
     }
   }
   // Table does not exist
   catch (Exception $e) {
-    $sql_schema = -1;
+    $sql_schema = 0;
   }
 
   // For each migrations

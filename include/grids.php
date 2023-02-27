@@ -4,8 +4,8 @@
   if(!isset($_SESSION['admin_id']))
     exit -1;
 
-  require(dirname(__FILE__) . '/connect.php');
-  require(dirname(__FILE__) . '/functions.php');
+  require_once(dirname(__FILE__) . '/connect.php');
+  require_once(dirname(__FILE__) . '/functions.php');
 
 
   // ---------------- SELECT ----------------
@@ -24,9 +24,6 @@
                           "user_phone" => $data['user_phone'],
                           "user_online" => $data['user_online'],
                           "user_enable" => $data['user_enable'],
-                          "user_2factor" => $data['user_2factor'],
-                          "user_2factor_paired" => $data['user_2factor_paired'],
-                          "user_2factor_scode" => $data['user_2factor_scode'],
                           "user_start_date" => $data['user_start_date'],
                           "user_end_date" => $data['user_end_date']);
         } while($data = $req->fetch());
@@ -40,6 +37,12 @@
       }
     }
 
+    else if ($_GET['select'] == "user_ldap") {
+      // Fake data for now
+
+      echo json_encode([ [ "user_ldap_id" => "blabla", "user_ldap_online" => 1 ] ]);
+    }
+
     // Select the logs
     else if($_GET['select'] == "log" && isset($_GET['offset'], $_GET['limit'])){
       $offset = intval($_GET['offset']);
@@ -48,27 +51,9 @@
       // Creation of the LIMIT for build different pages
       $page = "LIMIT $offset, $limit";
 
-      // ... filtering by the bootstrap table plugin
-      $filter = isset($_GET['filter']) ? json_decode($_GET['filter'],true) : []; // this is passed by the bootstrap table filter plugin (if a filter was chosen by the user): these are the concrete set filters with their value
-      $where = !empty($filter)?'WHERE TRUE':'';
-      $allowed_query_filters = ['user_id', 'log_trusted_ip','log_trusted_port','log_remote_ip','log_remote_port']; // these are valid filters that could be used (defined here for sql security reason)
-      $query_filters_existing = [];
-      foreach($filter as $unsanitized_filter_key => $unsanitized_filter_val) {
-         if(in_array($unsanitized_filter_key, $allowed_query_filters)) { // if this condition does not match: ignore it, because this parameter should not be passed
-            // if $unsanitized_filter_key is in array $allowed_query_filters its a valid key and can not be harmful, so it can be considered sanitized
-            $where .= " AND $unsanitized_filter_key = ?";
-            $query_filters_existing[] = $unsanitized_filter_key;
-         }
-      }
-
       // Select the logs
-      $req_string = "SELECT *, (SELECT COUNT(*) FROM log $where) AS nb FROM log $where ORDER BY log_id DESC $page";
+      $req_string = "SELECT *, (SELECT COUNT(*) FROM log) AS nb FROM log ORDER BY log_id DESC $page";
       $req = $bdd->prepare($req_string);
-
-      // dynamically bind the params
-      foreach(array_merge($query_filters_existing,$query_filters_existing) as $i => $query_filter) // array_merge -> duplicated the array contents; this is needed because our where clause is bound two times (in subquery + the outer query)
-         $req->bindValue($i+1, $filter[$query_filter]);
-
       $req->execute();
 
       $list = array();
@@ -80,8 +65,8 @@
 
         do {
           // Better in Kb or Mb
-          $received = ($data['log_received'] > 1000000) ? $data['log_received']/1000000 . " Mo" : $data['log_received']/1000 . " Ko";
-          $sent = ($data['log_send'] > 1000000) ? $data['log_send']/1000000 . " Mo" : $data['log_send']/1000 . " Ko";
+          $received = ($data['log_received'] > 100000) ? $data['log_received']/100000 . " Mo" : $data['log_received']/100 . " Ko";
+          $sent = ($data['log_send'] > 100000) ? $data['log_send']/100000 . " Mo" : $data['log_send']/100 . " Ko";
 
           // We add to the array the new line of logs
           array_push($list, array(
@@ -95,6 +80,7 @@
                                   "log_end_time" => $data['log_end_time'],
                                   "log_received" => $received,
                                   "log_send" => $sent));
+
 
         } while ($data = $req->fetch());
       }
@@ -137,15 +123,14 @@
     $pass = hashPass($_POST['user_pass']);
     $mail = "";
     $phone = "";
-    $user2factorScode=generateSecretCode();
     $online = 0;
     $enable = 1;
-    $start = null;
-    $end = null;
+    $start = NULL;
+    $end = NULL;
 
-    $req = $bdd->prepare('INSERT INTO user (user_id, user_pass, user_mail, user_phone, user_online, user_enable, user_start_date, user_end_date,user_2factor_scode)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?,?)');
-    $req->execute(array($id, $pass, $mail, $phone, $online, $enable, $start, $end, $user2factorScode));
+    $req = $bdd->prepare('INSERT INTO user (user_id, user_pass, user_mail, user_phone, user_online, user_enable, user_start_date, user_end_date)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
+    $req->execute(array($id, $pass, $mail, $phone, $online, $enable, $start, $end));
 
     $res = array("user_id" => $id,
       "user_pass" => $pass,
@@ -153,7 +138,6 @@
       "user_phone" => $phone,
       "user_online" => $online,
       "user_enable" => $enable,
-      "user_2factor_scode" => $user2factorScode,
       "user_start_date" => $start,
       "user_end_date" => $end
     );
@@ -163,7 +147,7 @@
 
   // ---------------- UPDATE USER ----------------
   else if(isset($_POST['set_user'])){
-    $valid = array("user_id", "user_pass", "user_mail", "user_phone", "user_enable","user_2factor","user_2factor_scode","user_2factor_paired", "user_start_date", "user_end_date");
+    $valid = array("user_id", "user_pass", "user_mail", "user_phone", "user_enable", "user_start_date", "user_end_date");
 
     $field = $_POST['name'];
     $value = $_POST['value'];
@@ -177,7 +161,7 @@
       $value = hashPass($value);
     }
     else if (($field === 'user_start_date' || $field === 'user_end_date') && $value === '') {
-      $value = null;
+      $value = NULL;
     }
 
     // /!\ SQL injection: field was checked with in_array function
@@ -223,38 +207,6 @@
   else if(isset($_POST['del_admin'], $_POST['del_admin_id'])){
     $req = $bdd->prepare('DELETE FROM admin WHERE admin_id = ?');
     $req->execute(array($_POST['del_admin_id']));
-  }
-
-  // ---------------- UPDATE CONFIG ----------------
-  else if(isset($_POST['update_config'])){
-
-      $pathinfo = pathinfo($_POST['config_file']);
-
-      $config_full_uri = $_POST['config_file']; // the complete path to the file, including the file (name) its self and the fully qualified path
-      $config_full_path = $pathinfo['dirname']; // path to file (without filename its self)
-      $config_name = basename($_POST['config_file']); // config file name only (without path)
-      $config_parent_dir = basename($config_full_path); // name of the dir that contains the config file (without path)
-
-      /*
-       * create backup for history
-       */
-      if (!file_exists($dir="../$config_full_path/history"))
-         mkdir($dir, 0777, true);
-      $ts = time();
-      copy("../$config_full_uri", "../$config_full_path/history/${ts}_${config_name}");
-
-      /*
-       *  write config
-       */
-      $conf_success = file_put_contents('../'.$_POST['config_file'], $_POST['config_content']);
-
-      echo json_encode([
-        'debug' => [
-            'config_file' => $_POST['config_file'],
-            'config_content' => $_POST['config_content']
-        ],
-        'config_success' => $conf_success !== false,
-      ]);
   }
 
 ?>

@@ -3,12 +3,8 @@
 
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
-        <li <?php if(isset($_GET['configuration'])) echo 'class="active"'; ?>><a href="index.php?configuration">Configurations</a></li>
-         <li <?php if(isset($_GET['authenticator'])) echo 'class="active"'; ?>><a href="index.php?authenticator">Setup Google Authentication</a></li>
+        <li <?php if(!isset($_GET['admin'])) echo 'class="active"'; ?>><a href="index.php">Configurations</a></li>
         <li <?php if(isset($_GET['admin'])) echo 'class="active"'; ?>><a href="index.php?admin">Administrator</a></li>
-
-
-
       </ul>
     </div>
 

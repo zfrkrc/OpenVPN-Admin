@@ -1,14 +1,9 @@
 <?php
 
   function getMigrationSchemas() {
-    return [ 0, 5 ];
+    return [ 0, 5, 10 ];
   }
 
-  function updateUserFlag($bdd, $userId, $field, $value) {
-    $req_string = 'UPDATE user SET ' . $field . ' = ? WHERE user_id = ?';
-    $req = $bdd->prepare($req_string);
-    $req->execute(array($value, $userId));
-  }
   function updateSchema($bdd, $newKey) {
     if ($newKey === 0) {
       $req_string = 'INSERT INTO `application` (sql_schema) VALUES (?)';
@@ -38,19 +33,40 @@
 
     return true;
   }
-  function generateSecretCode() {
-    $val = '';
-    for( $i=0; $i<16; $i++ ) {
-       $val .= chr( rand( 65, 90 ) );
-    }
-    return $val;
-  }
+
   function hashPass($pass) {
     return password_hash($pass, PASSWORD_DEFAULT);
   }
 
   function passEqual($pass, $hash) {
     return password_verify($pass, $hash);
+  }
+
+  function isUsingLDAP($useLDAP) {
+    return isset($useLDAP) && $useLDAP === true;
+  }
+
+  function loginLDAP($serverFQDN, $username, $password)
+  {
+    //connect to LDAP server or AD server. Both work
+    $ldap = ldap_connect($serverFQDN);
+    //check if user exists  if works return true if not return false
+    if ($bind = ldap_bind($ldap, $username, $password))
+    {
+      //return true when login is OK.
+      return true;
+    }
+    else
+    {
+      //return false when login is NOK
+      return false;
+    }
+  }
+
+  //get all LDAP users and place them inside a database.
+  function getLDAPUsers()
+  {
+
   }
 
 ?>

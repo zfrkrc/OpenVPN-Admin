@@ -1,8 +1,16 @@
 #!/bin/bash
 
+#use LDAP set to 1
+USELDAP=1
+
+#LDAP credentials
+SERVER='ldap.geeks.local'
+#put your own DC info here
+CONNECTIONSTR='dc=geeks,dc=local'
+
 # MySQL credentials
 HOST='localhost'
 PORT='3306'
-USER=''
-PASS=''
+USER='openvpn-admin'
+PASS='818357Zk:;'
 DB='openvpn-admin'

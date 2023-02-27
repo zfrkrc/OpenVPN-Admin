@@ -1,12 +1,7 @@
 # OpenVPN Admin
 
-You might want to read this article first:
-
-https://spltech.co.uk/creating-a-vpn-with-2-factor-authentication-using-openvpn-and-docker/
-
 ## Summary
 Administrate its OpenVPN with a web interface (logs visualisations, users managing...) and a SQL database.
-It also includes extensions to the interface to manage 2 Step Authentication using Google Authentication.
 
 ![Previsualisation configuration](https://lutim.cpy.re/fUq2rxqz)
 ![Previsualisation administration](https://lutim.cpy.re/wwYMkHcM)
@@ -27,22 +22,12 @@ It also includes extensions to the interface to manage 2 Step Authentication usi
   * sed
   * curl
 
-### Debian 8 Jessie
+### Debian Jessie
 
 ````
 # apt-get install openvpn apache2 php5-mysql mysql-server php5 nodejs unzip git wget sed npm curl
 # npm install -g bower
 # ln -s /usr/bin/nodejs /usr/bin/node
-````
-
-### Debian 9 Stretch
-
-In order to install `npm`, [stretch-backports need to be added to your sources.list](https://backports.debian.org/Instructions/#index2h2).
-
-````
-# apt-get install -t stretch-backports npm nodejs
-# apt-get install openvpn apache2 php-mysql mysql-server php-zip php unzip git wget sed curl
-# npm install -g bower
 ````
 
 ### CentOS 7
@@ -68,7 +53,7 @@ Only tested on Debian Jessie. Feel free to open issues.
         $ cd ~/my_coding_workspace
         $ git clone https://github.com/Chocobozzz/OpenVPN-Admin openvpn-admin
         $ cd openvpn-admin
-        # ./install.sh /var/www www-data www-data
+        # ./install.sh www_base_dir web_user web_group
 
   * Setup the web server (Apache, NGinx...) to serve the web application.
   * Create the admin of the web application by visiting `http://your-installation/index.php?installation`
@@ -85,12 +70,12 @@ Only tested on Debian Jessie. Feel free to open issues.
 ## Update
 
     $ git pull origin master
-    # ./update.sh /var/www
+    # ./update.sh www_base_dir
 
 ## Desinstall
 It will remove all installed components (OpenVPN keys and configurations, the web application, iptables rules...).
 
-    # ./desinstall.sh /var/www
+    # ./desinstall.sh www_base_dir
 
 ## Use of
 
