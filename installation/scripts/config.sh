@@ -1,12 +1,12 @@
 #!/bin/bash
 
 #use LDAP set to 1
-USELDAP=0
+USELDAP=1
 
 #LDAP credentials
-SERVER='ldap.geeks.local'
+SERVER='serverdc.bkmimari.local'
 #put your own DC info here
-CONNECTIONSTR='$2y$10$zV4m1svyeY9MhsRWV.w8f.HpKXlEjQgZcB.1z7TfDvAthmRmzhmSW'
+CONNECTIONSTR='DC=bkmimari,DC=local'
 
 # MySQL credentials
 HOST='localhost'
