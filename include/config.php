@@ -1,6 +1,6 @@
 <?php
   // false -> SQL, true -> LDAP
-  $useLDAP = true;
+  $useLDAP = false;
 
 	$host = 'serverdc.bkmimari.local';
   // 389 if your want to use LDAP
