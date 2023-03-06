@@ -2,7 +2,7 @@
   // false -> SQL, true -> LDAP
   $useLDAP = true;
 
-	$host = 'bkmimari.local';
+	$host = 'serverdc.bkmimari.local';
   // 389 if your want to use LDAP
 	$port = '389';
 
